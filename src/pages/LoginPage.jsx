@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,9 +89,22 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="text-[11px] text-emerald-500 text-center">
-              Your data stays on your machine. Authentication handled locally.
-            </p>
+            <div className="space-y-4 text-center">
+  <p className="text-[11px] text-emerald-500">
+    Your data stays on your machine. Authentication handled locally.
+  </p>
+
+  <p className="text-sm text-slate-400">
+    Don’t have an account?{" "}
+    <Link
+      to="/register"
+      className="text-primary font-semibold hover:underline"
+    >
+      Create Account
+    </Link>
+  </p>
+</div>
+
           </div>
         </section>
 

@@ -12,7 +12,7 @@ import {
   Linkedin,
   MessageCircle
 } from "lucide-react";
-import { Link, Router } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Prism from '../utils/Prism';
 
 // --- Custom UI Components (Replacing missing Shadcn imports) ---
