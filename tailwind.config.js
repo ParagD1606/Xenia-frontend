@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        // Adding specific dark theme colors to match the landing page
+        background: "#000000",
+        foreground: "#ffffff",
+        primary: "#3b82f6", // Blue
+        card: "rgba(255, 255, 255, 0.05)",
+        border: "rgba(255, 255, 255, 0.1)",
+      },
+    },
   },
   plugins: [],
 }
