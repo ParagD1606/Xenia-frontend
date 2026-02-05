@@ -4,7 +4,8 @@ import Prism from './utils/Prism';
 import Landing from './pages/Landing';
 import LoginPage from './pages/LoginPage'; 
 import RegisterPage from "./pages/RegisterPage";
-import Dashboard from "./Dashboard"
+import Dashboard from "./pages/Dashboard";
+import OutreachChat from './pages/OutreachChat';
 
 const App = () => {
   return (
@@ -29,6 +30,11 @@ const App = () => {
           
           {/* Login path shows the LoginPage component */}
           <Route path="/login" element={<LoginPage />} />
+          
+
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/outreach" element={<OutreachChat />} />
+
           
           {/* ✅ 2. Replace placeholder with the actual Dashboard component */}
           <Route path="/dashboard" element={<Dashboard />} />
