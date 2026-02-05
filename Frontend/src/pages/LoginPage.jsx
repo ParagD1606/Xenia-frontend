@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Eye, 
   EyeOff, 
@@ -8,24 +8,57 @@ import {
   Lock, 
   Mail, 
   ShieldCheck,
-  ChevronLeft 
+  ChevronLeft,
+  AlertCircle
 } from "lucide-react";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
+  // UI States
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [focusedInput, setFocusedInput] = useState(null);
 
-  const handleLogin = (e) => {
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    setError("");
+
+    try {
+      // ✅ UPDATED: Points to Port 8080 to match your Register page
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 1. Save user data to localStorage (This "links" it to the Dashboard)
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        // 2. Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      setError("Server connection failed. Is the backend running on port 8080?");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen w-full flex bg-[#050505] text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
       
-      {/* --- BACK BUTTON (Added Here) --- */}
+      {/* Back Button */}
       <Link 
         to="/" 
         className="absolute top-8 left-8 z-50 flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors group"
@@ -36,15 +69,13 @@ export default function LoginPage() {
         <span className="font-medium">Back to Home</span>
       </Link>
 
-      {/* Background Noise Texture */}
+      {/* Background Noise */}
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
       </div>
 
-      {/* --- LEFT SIDE: Visuals & Branding --- */}
+      {/* Left Side (Visuals) */}
       <div className="hidden lg:flex w-1/2 relative flex-col justify-end p-12 overflow-hidden border-r border-white/5">
-        
-        {/* Background Abstract Image */}
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2532&auto=format&fit=crop" 
@@ -53,8 +84,8 @@ export default function LoginPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-blue-950/20 to-[#050505]"></div>
         </div>
-
-        {/* Feature Quote / Social Proof */}
+        
+        {/* Quote Block */}
         <div className="relative z-10 max-w-md mb-20">
           <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl">
             <div className="flex items-center gap-2 text-emerald-400 mb-4">
@@ -62,10 +93,10 @@ export default function LoginPage() {
               <span className="text-xs font-bold uppercase tracking-wider">Local Privacy Core</span>
             </div>
             <p className="text-lg text-neutral-200 leading-relaxed font-light mb-6">
-              "Finally, an outreach tool that doesn't send my prospect data to the cloud. The local LLM integration is a game changer for enterprise security."
+              "Finally, an outreach tool that doesn't send my prospect data to the cloud. The local LLM integration is a game changer."
             </p>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-600 border border-white/10"></div>
+              <div className="w-10 h-10 rounded-full bg-neutral-700 border border-white/10"></div>
               <div>
                 <p className="text-sm font-semibold text-white">Elena R.</p>
                 <p className="text-xs text-neutral-500">Enterprise Sales Director</p>
@@ -73,19 +104,15 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
         <div className="relative z-10 text-neutral-500 text-xs">
           © 2024 OutreachGen AI. Secure Local Environment.
         </div>
       </div>
 
-      {/* --- RIGHT SIDE: Login Form --- */}
+      {/* Right Side (Form) */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative z-10">
-        
-        <div className="w-full max-w-[400px] space-y-8 animate-fade-in-up">
+        <div className="w-full max-w-[400px] space-y-8">
           
-          {/* Logo (Visible on Right side too for consistency) */}
           <div className="flex justify-center lg:justify-start mb-6">
              <div className="flex items-center gap-3">
               <div className="size-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -95,35 +122,28 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Form Header */}
           <div className="text-center lg:text-left space-y-2">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-              Welcome back
-            </h2>
-            <p className="text-neutral-400">
-              Access your local workspace and campaign data.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Welcome back</h2>
+            <p className="text-neutral-400">Access your local workspace and campaign data.</p>
           </div>
 
+          {/* Error Alert */}
+          {error && (
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-5">
-            
-            {/* Email Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-300 ml-1 uppercase tracking-wider">
-                Email
-              </label>
-              <div 
-                className={`group relative flex items-center rounded-xl border bg-white/5 transition-all duration-300 ${
-                  focusedInput === 'email' 
-                    ? "border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]" 
-                    : "border-white/10 hover:border-white/20"
-                }`}
-              >
-                <div className="pl-4 text-neutral-500">
-                  <Mail className="w-5 h-5" />
-                </div>
+              <label className="text-xs font-semibold text-neutral-300 ml-1 uppercase tracking-wider">Email</label>
+              <div className={`group relative flex items-center rounded-xl border bg-white/5 transition-all duration-300 ${focusedInput === 'email' ? "border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]" : "border-white/10 hover:border-white/20"}`}>
+                <div className="pl-4 text-neutral-500"><Mail className="w-5 h-5" /></div>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setFocusedInput('email')}
                   onBlur={() => setFocusedInput(null)}
                   className="w-full bg-transparent px-4 py-3.5 text-sm text-white placeholder:text-neutral-600 outline-none"
@@ -133,45 +153,29 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password Input */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between ml-1">
-                <label className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">
-                  Password
-                </label>
-                <Link to="/forgot-password" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                  Forgot password?
-                </Link>
+                <label className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">Password</label>
+                <Link to="#" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">Forgot password?</Link>
               </div>
-              <div 
-                className={`relative flex items-center rounded-xl border bg-white/5 transition-all duration-300 ${
-                  focusedInput === 'password' 
-                    ? "border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]" 
-                    : "border-white/10 hover:border-white/20"
-                }`}
-              >
-                 <div className="pl-4 text-neutral-500">
-                  <Lock className="w-5 h-5" />
-                </div>
+              <div className={`relative flex items-center rounded-xl border bg-white/5 transition-all duration-300 ${focusedInput === 'password' ? "border-blue-500/50 shadow-[0_0_20px_-5px_rgba(59,130,246,0.3)]" : "border-white/10 hover:border-white/20"}`}>
+                 <div className="pl-4 text-neutral-500"><Lock className="w-5 h-5" /></div>
                 <input
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setFocusedInput('password')}
                   onBlur={() => setFocusedInput(null)}
                   className="w-full bg-transparent px-4 py-3.5 text-sm text-white placeholder:text-neutral-600 outline-none"
                   placeholder="••••••••••••"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 p-1 text-neutral-500 hover:text-neutral-300 transition-colors"
-                >
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 p-1 text-neutral-500 hover:text-neutral-300 transition-colors">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Submit Button */}
             <button 
               disabled={isLoading}
               className="group relative w-full overflow-hidden rounded-xl bg-blue-600 py-3.5 font-semibold text-white transition-all hover:bg-blue-500 hover:shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)] disabled:opacity-70 disabled:cursor-not-allowed"
@@ -186,22 +190,14 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
           <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-white/10"></span>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#050505] px-2 text-neutral-500">Secure Local Environment</span>
-            </div>
+            <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-white/10"></span></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-[#050505] px-2 text-neutral-500">Secure Local Environment</span></div>
           </div>
 
-          {/* Sign Up Link */}
           <p className="text-center text-sm text-neutral-400">
             Don't have an account?{" "}
-            <Link to="/register" className="font-semibold text-blue-400 hover:text-blue-300 hover:underline underline-offset-4 transition-all">
-              Create an account
-            </Link>
+            <Link to="/register" className="font-semibold text-blue-400 hover:text-blue-300 hover:underline underline-offset-4 transition-all">Create an account</Link>
           </p>
         </div>
       </div>

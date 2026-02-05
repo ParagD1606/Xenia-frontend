@@ -2,9 +2,9 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Prism from './utils/Prism';
 import Landing from './pages/Landing';
-import LoginPage from './pages/LoginPage'; // Import your login page
+import LoginPage from './pages/LoginPage'; 
 import RegisterPage from "./pages/RegisterPage";
-
+import Dashboard from "./Dashboard"
 
 const App = () => {
   return (
@@ -26,13 +26,12 @@ const App = () => {
           <Route path="/" element={<Landing />} />
 
           <Route path="/register" element={<RegisterPage />} />
-
           
           {/* Login path shows the LoginPage component */}
           <Route path="/login" element={<LoginPage />} />
           
-          {/* Dashboard placeholder */}
-          <Route path="/dashboard" element={<div>Dashboard Coming Soon</div>} />
+          {/* ✅ 2. Replace placeholder with the actual Dashboard component */}
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </div>
